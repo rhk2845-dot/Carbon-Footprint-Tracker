@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eco Dashboard – Carbon Footprint Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <span>🌍 Carbon Tracker</span>
+      <a href="index.html">🧮 Calculator</a>
+    </nav>
+
+    <h1>📊 Eco Dashboard</h1>
+    <p class="subtitle">Your recent carbon footprint history.</p>
+
+    <div id="loading" class="loading-msg">Loading history…</div>
+    <div id="empty" class="empty-msg" hidden>No entries yet. <a href="index.html">Calculate your first footprint</a>.</div>
+    <div id="errorMsg" class="error" hidden></div>
+
+    <div id="statsRow" class="stat-grid" hidden>
+      <div class="stat-card">
+        <div class="stat-value" id="avgCarbon">—</div>
+        <div class="stat-label">Avg kg CO₂</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="avgEco">—</div>
+        <div class="stat-label">Avg Eco Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalEntries">—</div>
+        <div class="stat-label">Total Entries</div>
+      </div>
+    </div>
+
+    <div id="tableWrap" hidden>
+      <h2>📅 Recent Activity</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>kg CO₂</th>
+            <th>Eco Score</th>
+            <th>Impact</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    async function loadHistory() {
+      const loading = document.getElementById('loading');
+      const empty = document.getElementById('empty');
+      const errorDiv = document.getElementById('errorMsg');
+      const statsRow = document.getElementById('statsRow');
+      const tableWrap = document.getElementById('tableWrap');
+
+      try {
+        const res = await fetch('/api/history');
+        if (!res.ok) throw new Error('Failed to load history.');
+        const data = await res.json();
+
+        loading.hidden = true;
+
+        if (!data.length) {
+          empty.hidden = false;
+          return;
+        }
+
+        const avgCarbon = (data.reduce((s, r) => s + r.carbon, 0) / data.length).toFixed(2);
+        const avgEco = Math.round(data.reduce((s, r) => s + r.ecoScore, 0) / data.length);
+
+        document.getElementById('avgCarbon').textContent = avgCarbon + ' kg';
+        document.getElementById('avgEco').textContent = avgEco;
+        document.getElementById('totalEntries').textContent = data.length;
+        statsRow.hidden = false;
+
+        const tbody = document.getElementById('historyBody');
+        data.forEach(row => {
+          const date = new Date(row.createdAt).toLocaleDateString('en-GB', {
+            day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+          });
+          let impact = row.carbon > 20 ? '🔴 High' : row.carbon > 10 ? '🟡 Moderate' : '🟢 Low';
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${date}</td><td>${row.carbon} kg</td><td>${row.ecoScore}/100</td><td>${impact}</td>`;
+          tbody.appendChild(tr);
+        });
+
+        tableWrap.hidden = false;
+      } catch (err) {
+        loading.hidden = true;
+        errorDiv.textContent = err.message;
+        errorDiv.hidden = false;
+      }
+    }
+
+    loadHistory();
+  </script>
+</body>
+</html>
