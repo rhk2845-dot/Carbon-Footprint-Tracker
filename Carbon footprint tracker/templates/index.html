@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carbon Footprint Tracker</title>
+    <link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+    
+
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🌍 Carbon Footprint Tracker</h1>
+
+    <form method="POST">
+
+        <label>🚗 Car Distance (km)</label>
+        <input type="number" name="car" required>
+
+        <label>🚌 Bus Distance (km)</label>
+        <input type="number" name="bus" required>
+
+        <label>⚡ Electricity Units</label>
+        <input type="number" name="electricity" required>
+
+        <button type="submit">
+            Calculate Footprint
+        </button>
+
+    </form>
+
+    {% if total %}
+<div class="result">
+
+    <h2>Total Carbon Footprint</h2>
+
+    <h3>{{ total }} kg CO₂</h3>
+
+    <!-- Carbon Meter -->
+
+    {% if total < 10 %}
+        <h3>🟢 Low Carbon Impact</h3>
+
+    {% elif total < 20 %}
+        <h3>🟡 Moderate Carbon Impact</h3>
+
+    {% else %}
+        <h3>🔴 High Carbon Impact</h3>
+
+    {% endif %}
+
+    <h2>AI Suggestion</h2>
+
+    <p>{{ suggestion }}</p>
+
+</div>
+{% endif %}
+
+</div>
+
+</body>
+</html>

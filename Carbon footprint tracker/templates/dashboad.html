@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📊 Eco Dashboard</h1>
+
+    <div class="card">
+        <h2>Total Carbon</h2>
+        <h3>{{ total }} kg CO₂</h3>
+    </div>
+
+    <div class="card">
+        <h2>Eco Score</h2>
+        <h3>{{ eco_score }}/100</h3>
+    </div>
+
+    <div class="card">
+        <h2>Trees Needed</h2>
+        <h3>{{ trees }}</h3>
+    </div>
+
+    <div class="card">
+        <h2>Impact Level</h2>
+        <h3>{{ impact }}</h3>
+    </div>
+
+    <h2>📅 Recent Activity</h2>
+
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Carbon</th>
+            <th>Eco Score</th>
+        </tr>
+
+        {% for row in history %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+</body>
+</html>
